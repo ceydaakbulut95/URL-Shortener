@@ -1,5 +1,6 @@
 package org.example.urlshortener.service;
 
+import org.example.urlshortener.service.URLDatabaseService.*;
 import org.example.exception.URLShorteningException;
 import org.example.urlshortener.model.URLModel;
 import org.example.urlshortener.repository.URLRepository;
@@ -16,8 +17,12 @@ import java.util.Base64;
 public class URLEncodingService {
 
     private static final Logger logger = LoggerFactory.getLogger(URLEncodingService.class);
+
     @Autowired
     private URLRepository urlRepository;
+
+    @Autowired
+    private URLDatabaseService urlDatabaseService;
 
     private ZooKeeper zooKeeper;
     private static final String COUNTER_PATH = "/url_counter";
@@ -49,12 +54,7 @@ public class URLEncodingService {
             String shortUrl = Base64.getUrlEncoder().encodeToString(String.valueOf(counter).getBytes());
 
             LocalDateTime expirationDate = LocalDateTime.now().plusYears(5);
-            URLModel url = new URLModel();
-            url.setShortUrl(shortUrl);
-            url.setLongUrl(longUrl);
-            url.setCreatedTime(LocalDateTime.now());
-            url.setExpirationDate(expirationDate);
-            urlRepository.save(url);
+            urlDatabaseService.saveUrl(shortUrl, longUrl, expirationDate);
             logger.info("The shorter URL has been created successfully.");
 
             return shortUrl;
