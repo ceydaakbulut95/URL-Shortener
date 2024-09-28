@@ -13,8 +13,8 @@ public class URLController {
     private URLEncodingService urlEncodingService;
 
     @PostMapping("/shorten")
-    public ResponseEntity<String> shortenUrl(@RequestBody URLModel urlRequest) throws Exception {
-        String shortUrl = urlEncodingService.shortenURL(urlRequest.getLongUrl());
+    public ResponseEntity<String> shortenUrl(@RequestBody String longUrl) throws Exception {
+        String shortUrl = urlEncodingService.shortenURL(longUrl);
         return ResponseEntity.ok(shortUrl);
     }
 
