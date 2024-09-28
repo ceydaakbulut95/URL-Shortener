@@ -1,5 +1,6 @@
 package org.example.urlshortener.service;
 
+import org.example.exception.URLShorteningException;
 import org.example.urlshortener.model.URLModel;
 import org.example.urlshortener.repository.URLRepository;
 import org.apache.zookeeper.*;
@@ -34,6 +35,10 @@ public class URLEncodingService {
     }
 
     public String shortenURL(String longUrl) throws Exception {
+        if (longUrl == null || longUrl.trim().isEmpty()) {
+            logger.warn("Received empty or null longUrl");
+            throw new URLShorteningException("Long URL can't be empty.");
+        }
         try {
             logger.info("The shorter URL is being created.");
             byte[] data = zooKeeper.getData(COUNTER_PATH, false, null);
@@ -54,8 +59,8 @@ public class URLEncodingService {
 
             return shortUrl;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error while generating shorter URL" + e.getMessage());
+            logger.error("Error while generating shorter URL", e);
+            throw new URLShorteningException("Error while generating shorter URL" + e.getMessage(), e);
         }
     }
 
