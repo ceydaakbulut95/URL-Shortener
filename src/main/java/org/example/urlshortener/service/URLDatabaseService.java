@@ -13,12 +13,11 @@ public class URLDatabaseService {
     @Autowired
     private URLRepository urlRepository;
 
-    public void saveUrl(String shortUrl, String longUrl, LocalDateTime expirationDate) {
+    public void saveUrl(String shortUrl, String longUrl) {
         URLModel url = new URLModel();
         url.setShortUrl(shortUrl);
         url.setLongUrl(longUrl);
         url.setCreatedTime(LocalDateTime.now());
-        url.setExpirationDate(expirationDate);
         urlRepository.save(url);
     }
 }

@@ -17,17 +17,14 @@ public class URLModel {
     private String longUrl;
     @Column(nullable = false)
     private LocalDateTime createdTime;
-    @Column(nullable = false)
-    private LocalDateTime expirationDate;
 
     public URLModel(){} //for JPA without argument
 
-    public URLModel(String shortUrl, String longUrl, LocalDateTime createdTime, LocalDateTime expirationDate) {
+    public URLModel(String shortUrl, String longUrl, LocalDateTime createdTime) {
         this.id = id;
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.createdTime = createdTime;
-        this.expirationDate = expirationDate;
     }
 
     public Long getId() {
@@ -46,9 +43,6 @@ public class URLModel {
         return createdTime;
     }
 
-    public LocalDateTime getExpirationDate() {
-        return expirationDate;
-    }
 
     public void setId(Long id) {
         this.id = id;
@@ -66,7 +60,4 @@ public class URLModel {
         this.createdTime = createdTime;
     }
 
-    public void setExpirationDate(LocalDateTime expirationDate) {
-        this.expirationDate = expirationDate;
-    }
 }
