@@ -1,5 +1,7 @@
 package org.example.urlshortener.service;
 
+import org.example.urlshortener.service.URLDatabaseService.*;
+import org.example.exception.URLShorteningException;
 import org.example.urlshortener.model.URLModel;
 import org.example.urlshortener.repository.URLRepository;
 import org.apache.zookeeper.*;
@@ -8,15 +10,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Base64;
 
 @Service
 public class URLEncodingService {
 
     private static final Logger logger = LoggerFactory.getLogger(URLEncodingService.class);
+
     @Autowired
     private URLRepository urlRepository;
+
+    @Autowired
+    private URLDatabaseService urlDatabaseService;
 
     private ZooKeeper zooKeeper;
     private static final String COUNTER_PATH = "/url_counter";
@@ -34,6 +39,10 @@ public class URLEncodingService {
     }
 
     public String shortenURL(String longUrl) throws Exception {
+        if (longUrl == null || longUrl.trim().isEmpty()) {
+            logger.warn("Received empty or null longUrl");
+            throw new URLShorteningException("Long URL can't be empty.");
+        }
         try {
             logger.info("The shorter URL is being created.");
             byte[] data = zooKeeper.getData(COUNTER_PATH, false, null);
@@ -43,19 +52,13 @@ public class URLEncodingService {
             zooKeeper.setData(COUNTER_PATH, Integer.toString(counter).getBytes(), -1);
             String shortUrl = Base64.getUrlEncoder().encodeToString(String.valueOf(counter).getBytes());
 
-            LocalDateTime expirationDate = LocalDateTime.now().plusYears(5);
-            URLModel url = new URLModel();
-            url.setShortUrl(shortUrl);
-            url.setLongUrl(longUrl);
-            url.setCreatedTime(LocalDateTime.now());
-            url.setExpirationDate(expirationDate);
-            urlRepository.save(url);
+            urlDatabaseService.saveUrl(shortUrl, longUrl);
             logger.info("The shorter URL has been created successfully.");
 
             return shortUrl;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error while generating shorter URL" + e.getMessage());
+            logger.error("Error while generating shorter URL", e);
+            throw new URLShorteningException("Error while generating shorter URL" + e.getMessage(), e);
         }
     }
 
