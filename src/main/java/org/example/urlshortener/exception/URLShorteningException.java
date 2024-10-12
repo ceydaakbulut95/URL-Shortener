@@ -1,4 +1,4 @@
-package org.example.exception;
+package org.example.urlshortener.exception;
 
 public class URLShorteningException extends RuntimeException {
     public URLShorteningException(String message){

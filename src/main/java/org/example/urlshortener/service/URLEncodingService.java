@@ -1,10 +1,12 @@
 package org.example.urlshortener.service;
 
-import org.example.urlshortener.service.URLDatabaseService.*;
-import org.example.exception.URLShorteningException;
+import org.example.urlshortener.exception.URLShorteningException;
 import org.example.urlshortener.model.URLModel;
 import org.example.urlshortener.repository.URLRepository;
-import org.apache.zookeeper.*;
+import org.example.urlshortener.service.URLDatabaseService;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +25,13 @@ public class URLEncodingService {
     @Autowired
     private URLDatabaseService urlDatabaseService;
 
-    private ZooKeeper zooKeeper;
+    private final ZooKeeper zooKeeper;
     private static final String COUNTER_PATH = "/url_counter";
 
     public URLEncodingService() throws Exception {
-        zooKeeper = new ZooKeeper("localhost:2181", 2000, event -> {
-            if (event.getState() == Watcher.Event.KeeperState.SyncConnected) {
-                System.out.println("ZooKeeper connected");
-            }
-        });
+
+        zooKeeper = new ZooKeeper("zookeeper:2181", 2000, null);
+
         if (zooKeeper.exists(COUNTER_PATH, false) == null) {
             zooKeeper.create(COUNTER_PATH, "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
             logger.info("The counter is ready for ZooKeeper.");
