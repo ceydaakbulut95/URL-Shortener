@@ -1,5 +1,7 @@
 package org.example.urlshortener.controller;
 
+import jakarta.validation.Valid;
+import org.example.urlshortener.dto.UrlRequestDTO;
 import org.example.urlshortener.model.URLModel;
 import org.example.urlshortener.service.URLEncodingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +15,14 @@ public class URLController {
     private URLEncodingService urlEncodingService;
 
     @PostMapping("/shorten")
-    public ResponseEntity<String> shortenUrl(@RequestBody String longUrl) throws Exception {
-        String shortUrl = urlEncodingService.shortenURL(longUrl);
+    public ResponseEntity<String> shortenUrl(@Valid @RequestBody UrlRequestDTO urlRequest) throws Exception {
+        String shortUrl = urlEncodingService.shortenURL(urlRequest.getLongUrl());
         return ResponseEntity.ok(shortUrl);
     }
 
     @GetMapping("/expand/{shortUrl}")
     public ResponseEntity<String> expandUrl(@PathVariable String shortUrl) {
-        String longUrl = urlEncodingService.expandUrl(shortUrl);
+        String longUrl = urlEncodingService.expandURL(shortUrl);
         if (longUrl != null) {
             return ResponseEntity.ok(longUrl);
         } else {

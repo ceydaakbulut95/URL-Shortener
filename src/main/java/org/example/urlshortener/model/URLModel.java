@@ -49,9 +49,6 @@ public class URLModel {
     public String getIsActive(){ return isActive; }
 
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public void setShortUrl(String shortUrl) {
         this.shortUrl = shortUrl;

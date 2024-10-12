@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface URLRepository extends JpaRepository<URLModel, Long> {
-    URLModel findByShortUrl(String shortUrl);
+    Optional<URLModel> findByShortUrl(String shortUrl);
 
     @Modifying
     @Transactional
