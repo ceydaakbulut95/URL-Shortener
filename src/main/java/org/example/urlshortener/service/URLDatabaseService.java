@@ -18,6 +18,7 @@ public class URLDatabaseService {
         url.setShortUrl(shortUrl);
         url.setLongUrl(longUrl);
         url.setCreatedTime(LocalDateTime.now());
+        url.setIsActive("Y");
         urlRepository.save(url);
     }
 }

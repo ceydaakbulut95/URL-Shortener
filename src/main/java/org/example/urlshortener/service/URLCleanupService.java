@@ -20,14 +20,9 @@ public class URLCleanupService {
 
     @Scheduled(cron = "0 0 0 * * ?")  //Daily at midnight
     public void cleanExpiredUrls() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationThreshold = now.minusYears(5);
 
-        List<URLModel> expiredUrls = urlRepository.findAllByCreatedTimeBefore(expirationThreshold);
-
-        for (URLModel url : expiredUrls) {
-            urlRepository.delete(url);
-        }
+        LocalDateTime fiveYearsAgo = LocalDateTime.now().minusYears(5);
+        urlRepository.deactivateOldUrls(fiveYearsAgo);
 
         logger.info("Expired URLs cleaned up!");
     }

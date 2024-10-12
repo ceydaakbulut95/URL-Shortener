@@ -17,14 +17,17 @@ public class URLModel {
     private String longUrl;
     @Column(nullable = false)
     private LocalDateTime createdTime;
+    @Column(nullable = false)
+    private String isActive;
 
     public URLModel(){} //for JPA without argument
 
-    public URLModel(String shortUrl, String longUrl, LocalDateTime createdTime) {
+    public URLModel(String shortUrl, String longUrl, LocalDateTime createdTime, String isActive) {
         this.id = id;
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.createdTime = createdTime;
+        this.isActive = isActive;
     }
 
     public Long getId() {
@@ -43,6 +46,8 @@ public class URLModel {
         return createdTime;
     }
 
+    public String getIsActive(){ return isActive; }
+
 
     public void setId(Long id) {
         this.id = id;
@@ -59,5 +64,7 @@ public class URLModel {
     public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
     }
+
+    public void setIsActive(String isActive) { this.isActive = isActive; }
 
 }
