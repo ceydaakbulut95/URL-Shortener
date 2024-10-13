@@ -11,5 +11,7 @@ public class UrlRequestDTO {
         return longUrl;
     }
 
-
+    public void setLongUrl(String longUrl) {
+        this.longUrl = longUrl;
+    }
 }

@@ -29,6 +29,11 @@ public class KeyGenerationService {
         }
     }
 
+    //for testing
+    public KeyGenerationService(ZooKeeper zooKeeper) {
+        this.zooKeeper = zooKeeper;
+    }
+
     public String generateShortURL() throws Exception, IOException, KeeperException {
         byte[] data = zooKeeper.getData(COUNTER_PATH, false, null);
         int counter = Integer.parseInt(new String(data));
@@ -52,7 +57,7 @@ public class KeyGenerationService {
         return padShortUrl(shortUrl);
     }
 
-    private String padShortUrl(String shortUrl) {
+    public String padShortUrl(String shortUrl) {
         while (shortUrl.length() < 7) {
             shortUrl += "0";
         }
