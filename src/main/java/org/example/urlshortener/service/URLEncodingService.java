@@ -5,17 +5,12 @@ import org.example.urlshortener.exception.URLNotFoundException;
 import org.example.urlshortener.exception.URLShorteningException;
 import org.example.urlshortener.model.URLModel;
 import org.example.urlshortener.repository.URLRepository;
-import org.example.urlshortener.service.URLDatabaseService;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.ZooDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Base64;
 
 @Service
 public class URLEncodingService {
@@ -28,34 +23,33 @@ public class URLEncodingService {
     @Autowired
     private URLDatabaseService urlDatabaseService;
 
-    private final ZooKeeper zooKeeper;
-    private static final String COUNTER_PATH = "/url_counter";
-
-    public URLEncodingService() throws Exception, IOException, KeeperException {
-
-        zooKeeper = new ZooKeeper("zookeeper:2181", 2000, null);
-
-        if (zooKeeper.exists(COUNTER_PATH, false) == null) {
-            zooKeeper.create(COUNTER_PATH, "0".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-            logger.info("The counter is ready for ZooKeeper.");
-        }
-    }
+    @Autowired
+    private KeyGenerationService keyGenerationService;
 
     public String shortenURL(String longUrl) throws Exception, IOException, KeeperException {
         if (longUrl == null || longUrl.trim().isEmpty()) {
             logger.warn("Received empty or null longUrl");
             throw new URLShorteningException("Long URL can't be empty.");
         }
+
         try {
             logger.info("The shorter URL is being created.");
 
-            byte[] data = zooKeeper.getData(COUNTER_PATH, false, null);
-            int counter = Integer.parseInt(new String(data));
+            String shortUrl;
+            boolean isUnique;
 
-            counter++;
-            zooKeeper.setData(COUNTER_PATH, Integer.toString(counter).getBytes(), -1);
+            do {
 
-            String shortUrl = Base64.getUrlEncoder().encodeToString(String.valueOf(counter).getBytes());
+                shortUrl = keyGenerationService.generateShortURL();
+
+                isUnique = urlRepository.findByShortUrl(shortUrl).isEmpty();
+
+                if (!isUnique) {
+                    logger.warn("Generated a duplicate short URL. Trying UUID as a fallback.");
+                    shortUrl = keyGenerationService.generateUUIDShortUrl();
+                    isUnique = urlRepository.findByShortUrl(shortUrl).isEmpty();
+                }
+            } while (!isUnique);
 
             urlDatabaseService.saveUrl(shortUrl, longUrl);
 
