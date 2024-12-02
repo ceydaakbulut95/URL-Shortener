@@ -63,6 +63,7 @@ public class URLEncodingService {
     }
 
     public String expandURL(String shortUrl) {
+        urlRepository.incrementHitCount(shortUrl); // Increment hit count
         return urlRepository.findByShortUrl(shortUrl)
                 .map(URLModel::getLongUrl)
                 .orElseThrow(() -> new URLNotFoundException("Short URL not found: " + shortUrl));
