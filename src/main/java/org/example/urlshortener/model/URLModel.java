@@ -19,15 +19,19 @@ public class URLModel {
     private LocalDateTime createdTime;
     @Column(nullable = false)
     private String isActive;
+    @Column(nullable = false)
+    private int hitCount = 0;
+
 
     public URLModel(){} //for JPA without argument
 
-    public URLModel(String shortUrl, String longUrl, LocalDateTime createdTime, String isActive) {
+    public URLModel(String shortUrl, String longUrl, LocalDateTime createdTime, String isActive, int hitCount) {
         this.id = id;
         this.shortUrl = shortUrl;
         this.longUrl = longUrl;
         this.createdTime = createdTime;
         this.isActive = isActive;
+        this.hitCount = hitCount;
     }
 
     public Long getId() {
@@ -48,7 +52,7 @@ public class URLModel {
 
     public String getIsActive(){ return isActive; }
 
-
+    public int getHitCount(){ return hitCount; }
 
     public void setShortUrl(String shortUrl) {
         this.shortUrl = shortUrl;
@@ -64,4 +68,5 @@ public class URLModel {
 
     public void setIsActive(String isActive) { this.isActive = isActive; }
 
+    public void setHitCount(int hitCount){ this.hitCount = hitCount; }
 }
